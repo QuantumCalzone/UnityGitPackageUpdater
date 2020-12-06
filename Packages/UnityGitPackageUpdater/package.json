@@ -1,0 +1,27 @@
+{
+  "name": "com.quantumcalzone.unitygitpackageupdater",
+  "displayName": "UnityGitPackageUpdater",
+  "description": "Easily update Unity packages hosted via git",
+  "version": "1.0.0",
+  "unity": "2018.1",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/QuantumCalzone/UnityLayoutElementExtended.git"
+  },
+  "author": {
+    "name": "QuantumCalzone",
+    "email": "QuantumCalzone@gmail.com",
+    "url": "https://github.com/QuantumCalzone"
+  },
+  "type": "tool",
+  "keywords": [
+    "unity",
+    "layout",
+    "elementExtended",
+    "extended",
+    "quantum",
+    "calzone"
+  ],
+  "category": "QuantumCalzone"
+}
