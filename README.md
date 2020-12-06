@@ -1,6 +1,9 @@
 # Unity Git Package Updater
 Easily update Unity packages hosted via git
 
+## Location
+Window/Package Updater
+
 ## How to install
 ### Via 2019.4 and later
 - In Unity, open Window/Package Manager
