@@ -55,7 +55,43 @@ namespace QuantumCalzone
 
             if (packages.Count > 0)
             {
-                EditorGUILayout.HelpBox("Select a package below to update", MessageType.Info);
+                if (GUILayout.Button("Update All"))
+                {
+                    for (var i = 0; i < packages.Count; i++)
+                    {
+                        /*
+                        var progressBarTitle = "Updating";
+                        var progressBarInfo = "???";
+                        var progressBarProgress = (float)i / (float)packages.Count;
+                        Debug.Log(string.Format("i: {0} / packages.Count: {1} = {2}", i, packages.Count, progressBarProgress));
+                        */
+
+                        /*
+                        if (EditorUtility.DisplayCancelableProgressBar(
+                            title: progressBarTitle,
+                            info: progressBarInfo,
+                            progress: progressBarProgress))
+                        {
+                            EditorUtility.ClearProgressBar();
+                            break;
+                        }
+                        */
+
+                        /*
+                        EditorUtility.DisplayProgressBar(
+                            title: progressBarTitle,
+                            info: progressBarInfo,
+                            progress: progressBarProgress
+                        );
+                        */
+
+                        ReinstallPackage(packages[i].PackageIndex);
+                    }
+
+                    //EditorUtility.ClearProgressBar();
+                }
+
+                EditorGUILayout.HelpBox("Or select a package below to update", MessageType.Info);
             }
 
             scrollPosition = GUILayout.BeginScrollView(
@@ -64,8 +100,10 @@ namespace QuantumCalzone
                 alwaysShowVertical: false,
                 horizontalScrollbar: GUIStyle.none,
                 verticalScrollbar: GUI.skin.verticalScrollbar,
-                "Box"
+                background: "Box"
             );
+
+            scrollPosition.x = 0;
 
             for (var i = 0; i < packages.Count; i++)
             {
