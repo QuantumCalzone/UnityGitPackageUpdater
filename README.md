@@ -1,7 +1,7 @@
 # Unity Git Package Updater
 Easily update Unity packages hosted via git
 
-![](https://imgur.com/4h6VNip.png)
+![](https://imgur.com/ZTBjyRe.png)
 
 ## Location
 Window/Package Updater
