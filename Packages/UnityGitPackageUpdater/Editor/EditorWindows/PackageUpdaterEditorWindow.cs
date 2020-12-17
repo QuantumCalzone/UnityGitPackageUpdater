@@ -112,7 +112,7 @@ namespace QuantumCalzone
             for (var i = 0; i < manifestLines.Length; i++)
             {
                 var manifestLine = manifestLines[i];
-                if (manifestLine.Contains("com."))
+                if (manifestLine.Contains("com.") && manifestLine.Contains(".git"))
                 {
                     manifestLine = manifestLine.Split(':')[0];
                     manifestLine = manifestLine.Replace("    \"", string.Empty);
