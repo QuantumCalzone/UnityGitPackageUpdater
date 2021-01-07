@@ -57,38 +57,7 @@ namespace QuantumCalzone
             {
                 if (GUILayout.Button("Update All"))
                 {
-                    for (var i = 0; i < packages.Count; i++)
-                    {
-                        /*
-                        var progressBarTitle = "Updating";
-                        var progressBarInfo = "???";
-                        var progressBarProgress = (float)i / (float)packages.Count;
-                        Debug.Log(string.Format("i: {0} / packages.Count: {1} = {2}", i, packages.Count, progressBarProgress));
-                        */
-
-                        /*
-                        if (EditorUtility.DisplayCancelableProgressBar(
-                            title: progressBarTitle,
-                            info: progressBarInfo,
-                            progress: progressBarProgress))
-                        {
-                            EditorUtility.ClearProgressBar();
-                            break;
-                        }
-                        */
-
-                        /*
-                        EditorUtility.DisplayProgressBar(
-                            title: progressBarTitle,
-                            info: progressBarInfo,
-                            progress: progressBarProgress
-                        );
-                        */
-
-                        ReinstallPackage(packages[i].PackageIndex);
-                    }
-
-                    //EditorUtility.ClearProgressBar();
+                    File.Delete(PackagesLockPath);
                 }
 
                 EditorGUILayout.HelpBox("Or select a package below to update", MessageType.Info);
@@ -143,7 +112,7 @@ namespace QuantumCalzone
             for (var i = 0; i < manifestLines.Length; i++)
             {
                 var manifestLine = manifestLines[i];
-                if (manifestLine.Contains("com."))
+                if (manifestLine.Contains("com.") && manifestLine.Contains(".git"))
                 {
                     manifestLine = manifestLine.Split(':')[0];
                     manifestLine = manifestLine.Replace("    \"", string.Empty);
