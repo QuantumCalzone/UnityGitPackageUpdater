@@ -2,12 +2,12 @@
     "name": "com.quantumcalzone.unitygitpackageupdater",
     "displayName": "UnityGitPackageUpdater",
     "description": "Easily update Unity packages hosted via git",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "unity": "2018.1",
     "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/QuantumCalzone/UnityLayoutElementExtended.git"
+        "url": "git+https://github.com/QuantumCalzone/UnityGitPackageUpdater.git"
     },
     "author": {
         "name": "QuantumCalzone",

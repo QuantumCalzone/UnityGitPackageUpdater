@@ -1,0 +1,21 @@
+﻿<Properties StartupConfiguration="{82E1D415-8A47-590A-08C6-95BBBD78F3D7}|">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Packages/UnityGitPackageUpdater/Editor/EditorWindows/GitPackageUpdaterEditorWindow.cs">
+    <Files>
+      <File FileName="Packages/UnityGitPackageUpdater/Editor/EditorWindows/GitPackageUpdaterEditorWindow.cs" Line="8" Column="18" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="UnityGitPackageUpdater" expanded="True" selected="True" />
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+  <MonoDevelop.Ide.ItemProperties.UnityGitPackageUpdater.Editor PreferredExecutionTarget="4c3d669d-030a-4e6f-9e5c-2b6ebf675076" />
+</Properties>
