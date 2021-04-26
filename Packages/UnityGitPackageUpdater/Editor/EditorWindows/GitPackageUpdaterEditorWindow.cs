@@ -5,7 +5,7 @@ using UnityEditor;
 
 namespace QuantumCalzone
 {
-    public class PackageUpdaterEditorWindow : EditorWindow
+    public class GitPackageUpdaterEditorWindow : EditorWindow
     {
         private struct Package
         {
@@ -89,16 +89,16 @@ namespace QuantumCalzone
         #endregion
 
         #region Methods
-        [MenuItem("Window/Package Updater")]
+        [MenuItem("Window/Git Package Updater")]
         private static void OpenWindow()
         {
-            var packageReinstallerWindow = (PackageUpdaterEditorWindow)GetWindow(
-                t: typeof(PackageUpdaterEditorWindow),
+            var gitPackageReinstallerWindow = (GitPackageUpdaterEditorWindow)GetWindow(
+                t: typeof(GitPackageUpdaterEditorWindow),
                 utility: false,
-                title: "Package Updater"
+                title: "Git Package Updater"
             );
-            packageReinstallerWindow.Show();
-            packageReinstallerWindow.RefreshPackages();
+            gitPackageReinstallerWindow.Show();
+            gitPackageReinstallerWindow.RefreshPackages();
         }
 
         public void RefreshPackages()

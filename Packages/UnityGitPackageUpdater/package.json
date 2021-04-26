@@ -7,7 +7,7 @@
     "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/QuantumCalzone/UnityLayoutElementExtended.git"
+        "url": "git+https://github.com/QuantumCalzone/UnityGitPackageUpdater.git"
     },
     "author": {
         "name": "QuantumCalzone",
