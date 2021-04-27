@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEditor;
 
@@ -22,7 +23,10 @@ namespace QuantumCalzone
         #region Fields
         private List<Package> packages = new List<Package>();
         private Vector2 scrollPosition = Vector2.zero;
-        private bool verbose = false;
+        private static Regex afterLastOccurrenceOfHashtag = new Regex("([^#]+$)");
+        private static Regex afterLastOccurrenceOfQuotes = new Regex("([^\"]+$)");
+        private static Regex betweenQuotes = new Regex("(?<=\")(.*?)(?=\")");
+        private static bool verbose = false;
         #endregion
 
         #region Properties
@@ -57,7 +61,14 @@ namespace QuantumCalzone
             {
                 if (GUILayout.Button("Update All"))
                 {
+                    ReinstallAllGitPackages();
+                }
+
+                if (GUILayout.Button("Update All (Including Non-Git)"))
+                {
                     File.Delete(PackagesLockPath);
+
+                    AssetDatabase.Refresh();
                 }
 
                 EditorGUILayout.HelpBox("Or select a package below to update", MessageType.Info);
@@ -78,7 +89,7 @@ namespace QuantumCalzone
             {
                 if (GUILayout.Button(packages[i].ManifestLine))
                 {
-                    ReinstallPackage(packages[i].PackageIndex);
+                    ReinstallPackage(packages[i].ManifestLine);
                 }
             }
 
@@ -123,18 +134,73 @@ namespace QuantumCalzone
             }
         }
 
-        private void ReinstallPackage(int atLine)
+        private void ReinstallAllGitPackages()
         {
-            if (verbose) Debug.Log(string.Format("ReinstallPackage ( atLine: {0} )", atLine));
+            if (verbose) Debug.Log("ReinstallAllGitPackages");
 
-            var manifestLines = File.ReadAllText(ManifestPath).Split('\n');
-            var oldManifest = string.Join("\n", manifestLines);
-            ArrayUtility.RemoveAt(ref manifestLines, atLine);
-            var newManifest = string.Join("\n", manifestLines);
-            File.WriteAllText(ManifestPath, newManifest);
-            AssetDatabase.Refresh();
-            File.WriteAllText(ManifestPath, oldManifest);
-            AssetDatabase.Refresh();
+            for (var i = 0; i < packages.Count; i++)
+            {
+                var package = packages[i];
+                ReinstallPackage(package.ManifestLine);
+            }
+        }
+
+        private void ReinstallPackage(string packageName)
+        {
+            if (verbose) Debug.Log(string.Format("ReinstallPackage ( packageName: {0} )", packageName));
+
+            var packagesLockLines = File.ReadAllLines(PackagesLockPath);
+            var foundPackage = false;
+            var changed = false;
+            for (var i = 0; i < packagesLockLines.Length; i++)
+            {
+                var packagesLockLine = packagesLockLines[i];
+                if (packagesLockLine.Contains(packageName))
+                {
+                    foundPackage = true;
+                }
+
+                //if (foundPackage && packagesLockLine.Contains("version"))
+                //{
+                //    var afterLastOccurrenceOfHashtagResult = afterLastOccurrenceOfHashtag.Match(packagesLockLine);
+                //    if (afterLastOccurrenceOfHashtagResult.Success)
+                //    {
+                //        var afterLastOccurrenceOfHashtagResultValue = '#' + afterLastOccurrenceOfHashtagResult.Groups[0].Value;
+                //        packagesLockLine = packagesLockLine.Replace(afterLastOccurrenceOfHashtagResultValue, string.Empty);
+                //        var afterLastOccurrenceOfQuotesResult = afterLastOccurrenceOfQuotes.Match(packagesLockLine);
+                //        if (afterLastOccurrenceOfQuotesResult.Success)
+                //        {
+                //            packagesLockLine = afterLastOccurrenceOfQuotesResult.Groups[0].Value;
+                //            break;
+                //        }
+                //    }
+                //}
+
+                if (foundPackage && packagesLockLine.Contains("hash"))
+                {
+                    packagesLockLine = packagesLockLine.Replace("\"hash\": ", string.Empty);
+                    var betweenQuotesResult = betweenQuotes.Match(packagesLockLine);
+                    if (betweenQuotesResult.Success)
+                    {
+                        var hash = betweenQuotesResult.Groups[0].Value;
+                        packagesLockLines[i] = packagesLockLines[i].Replace(hash, string.Empty);
+                        changed = true;
+                    }
+                    foundPackage = false;
+                }
+            }
+
+            if (changed)
+            {
+                var newpackagesLock = string.Empty;
+                for (var i = 0; i < packagesLockLines.Length; i++)
+                {
+                    newpackagesLock += packagesLockLines[i];
+                    newpackagesLock += '\n';
+                }
+
+                File.WriteAllText(PackagesLockPath, newpackagesLock);
+            }
         }
         #endregion
     }
