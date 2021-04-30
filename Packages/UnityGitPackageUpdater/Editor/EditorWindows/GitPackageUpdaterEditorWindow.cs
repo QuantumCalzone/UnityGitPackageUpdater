@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEditor;
 
-namespace QuantumCalzone
+namespace GitPackageUpdater
 {
     public class GitPackageUpdaterEditorWindow : EditorWindow
     {
