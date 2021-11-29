@@ -151,7 +151,7 @@ namespace GitPackageUpdater
 
             using (var streamWriter = new StreamWriter(PackagesLockPath))
             {
-                streamWriter.Write(dependencies.ToString());
+                streamWriter.Write(dependencies.ToString(1));
             }
         }
     }
