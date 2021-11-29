@@ -1,40 +1,32 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEditor;
+using SimpleJSON;
 
 namespace GitPackageUpdater
 {
     public class GitPackageUpdaterEditorWindow : EditorWindow
     {
-        private struct Package
-        {
-            public Package(string manifestLine, int packageIndex)
-            {
-                ManifestLine = manifestLine;
-                PackageIndex = packageIndex;
-            }
-
-            public string ManifestLine;
-            public int PackageIndex;
-        }
-
-        #region Fields
-        private List<Package> packages = new List<Package>();
+        private static List<string> packages = new List<string>();
         private Vector2 scrollPosition = Vector2.zero;
-        private static Regex afterLastOccurrenceOfHashtag = new Regex("([^#]+$)");
-        private static Regex afterLastOccurrenceOfQuotes = new Regex("([^\"]+$)");
-        private static Regex betweenQuotes = new Regex("(?<=\")(.*?)(?=\")");
         private static bool verbose = false;
-        #endregion
 
-        #region Properties
         private static string ManifestPath {
             get {
                 var projectPath = Directory.GetParent(Application.dataPath).FullName;
                 var manifestPath = Path.Combine(projectPath, "Packages", "manifest.json");
                 return manifestPath;
+            }
+        }
+
+        private static JSONNode Manifest
+        {
+            get
+            {
+                var manifestSource = File.ReadAllText(ManifestPath);
+                var manifest = JSON.Parse(manifestSource);
+                return manifest;
             }
         }
 
@@ -45,9 +37,17 @@ namespace GitPackageUpdater
                 return packagesLockPath;
             }
         }
-        #endregion
 
-        #region Editor Messages
+        private static JSONNode PackagesLock
+        {
+            get
+            {
+                var packagesLockSource = File.ReadAllText(PackagesLockPath);
+                var packagesLock = JSON.Parse(packagesLockSource);
+                return packagesLock;
+            }
+        }
+
         private void OnGUI()
         {
             EditorGUILayout.BeginVertical();
@@ -62,6 +62,8 @@ namespace GitPackageUpdater
                 if (GUILayout.Button("Update All"))
                 {
                     ReinstallAllGitPackages();
+
+                    AssetDatabase.Refresh();
                 }
 
                 if (GUILayout.Button("Update All (Including Non-Git)"))
@@ -87,9 +89,10 @@ namespace GitPackageUpdater
 
             for (var i = 0; i < packages.Count; i++)
             {
-                if (GUILayout.Button(packages[i].ManifestLine))
+                if (GUILayout.Button(packages[i]))
                 {
-                    ReinstallPackage(packages[i].ManifestLine);
+                    ReinstallPackage(packages[i]);
+                    AssetDatabase.Refresh();
                 }
             }
 
@@ -97,9 +100,7 @@ namespace GitPackageUpdater
 
             EditorGUILayout.EndVertical();
         }
-        #endregion
 
-        #region Methods
         [MenuItem("Window/Git Package Updater")]
         private static void OpenWindow()
         {
@@ -118,18 +119,13 @@ namespace GitPackageUpdater
 
             packages.Clear();
 
-            var manifestLines = File.ReadAllText(ManifestPath).Split('\n');
-
-            for (var i = 0; i < manifestLines.Length; i++)
+            var manifest = Manifest;
+            var dependencies = manifest["dependencies"];
+            foreach (var dependency in dependencies)
             {
-                var manifestLine = manifestLines[i];
-                if (manifestLine.Contains("com.") && manifestLine.Contains(".git"))
+                if (dependency.Value.Value.Contains(".git"))
                 {
-                    manifestLine = manifestLine.Split(':')[0];
-                    manifestLine = manifestLine.Replace("    \"", string.Empty);
-                    manifestLine = manifestLine.Replace("\"", string.Empty);
-                    manifestLine = manifestLine.Replace("com.", string.Empty);
-                    packages.Add(new Package(manifestLine, i));
+                    packages.Add(dependency.Key);
                 }
             }
         }
@@ -141,67 +137,22 @@ namespace GitPackageUpdater
             for (var i = 0; i < packages.Count; i++)
             {
                 var package = packages[i];
-                ReinstallPackage(package.ManifestLine);
+                ReinstallPackage(package);
             }
         }
 
-        private void ReinstallPackage(string packageName)
+        private void ReinstallPackage(string package)
         {
-            if (verbose) Debug.Log(string.Format("ReinstallPackage ( packageName: {0} )", packageName));
+            if (verbose) Debug.Log(string.Format("ReinstallPackage ( package: {0} )", package));
 
-            var packagesLockLines = File.ReadAllLines(PackagesLockPath);
-            var foundPackage = false;
-            var changed = false;
-            for (var i = 0; i < packagesLockLines.Length; i++)
+            var packagesLock = PackagesLock;
+            var dependencies = packagesLock["dependencies"];
+            dependencies[package]["hash"] = string.Empty;
+
+            using (var streamWriter = new StreamWriter(PackagesLockPath))
             {
-                var packagesLockLine = packagesLockLines[i];
-                if (packagesLockLine.Contains(packageName))
-                {
-                    foundPackage = true;
-                }
-
-                //if (foundPackage && packagesLockLine.Contains("version"))
-                //{
-                //    var afterLastOccurrenceOfHashtagResult = afterLastOccurrenceOfHashtag.Match(packagesLockLine);
-                //    if (afterLastOccurrenceOfHashtagResult.Success)
-                //    {
-                //        var afterLastOccurrenceOfHashtagResultValue = '#' + afterLastOccurrenceOfHashtagResult.Groups[0].Value;
-                //        packagesLockLine = packagesLockLine.Replace(afterLastOccurrenceOfHashtagResultValue, string.Empty);
-                //        var afterLastOccurrenceOfQuotesResult = afterLastOccurrenceOfQuotes.Match(packagesLockLine);
-                //        if (afterLastOccurrenceOfQuotesResult.Success)
-                //        {
-                //            packagesLockLine = afterLastOccurrenceOfQuotesResult.Groups[0].Value;
-                //            break;
-                //        }
-                //    }
-                //}
-
-                if (foundPackage && packagesLockLine.Contains("hash"))
-                {
-                    packagesLockLine = packagesLockLine.Replace("\"hash\": ", string.Empty);
-                    var betweenQuotesResult = betweenQuotes.Match(packagesLockLine);
-                    if (betweenQuotesResult.Success)
-                    {
-                        var hash = betweenQuotesResult.Groups[0].Value;
-                        packagesLockLines[i] = packagesLockLines[i].Replace(hash, string.Empty);
-                        changed = true;
-                    }
-                    foundPackage = false;
-                }
-            }
-
-            if (changed)
-            {
-                var newpackagesLock = string.Empty;
-                for (var i = 0; i < packagesLockLines.Length; i++)
-                {
-                    newpackagesLock += packagesLockLines[i];
-                    newpackagesLock += '\n';
-                }
-
-                File.WriteAllText(PackagesLockPath, newpackagesLock);
+                streamWriter.Write(dependencies.ToString());
             }
         }
-        #endregion
     }
 }
