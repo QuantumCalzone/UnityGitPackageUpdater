@@ -62,15 +62,13 @@ namespace GitPackageUpdater
                 if (GUILayout.Button("Update All"))
                 {
                     ReinstallAllGitPackages();
-
-                    AssetDatabase.Refresh();
+                    UnityRefresher.RefreshExceptPackages();
                 }
 
                 if (GUILayout.Button("Update All (Including Non-Git)"))
                 {
                     File.Delete(PackagesLockPath);
-
-                    AssetDatabase.Refresh();
+                    UnityRefresher.RefreshExceptPackages();
                 }
 
                 EditorGUILayout.HelpBox("Or select a package below to update", MessageType.Info);
@@ -92,7 +90,7 @@ namespace GitPackageUpdater
                 if (GUILayout.Button(packages[i]))
                 {
                     ReinstallPackage(packages[i]);
-                    AssetDatabase.Refresh();
+                    UnityRefresher.RefreshExceptPackages();
                 }
             }
 
