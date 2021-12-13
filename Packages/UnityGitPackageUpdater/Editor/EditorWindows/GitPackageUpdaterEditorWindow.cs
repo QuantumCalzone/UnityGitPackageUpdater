@@ -62,15 +62,13 @@ namespace GitPackageUpdater
                 if (GUILayout.Button("Update All"))
                 {
                     ReinstallAllGitPackages();
-
-                    AssetDatabase.Refresh();
+                    RefreshUnity();
                 }
 
                 if (GUILayout.Button("Update All (Including Non-Git)"))
                 {
                     File.Delete(PackagesLockPath);
-
-                    AssetDatabase.Refresh();
+                    RefreshUnity();
                 }
 
                 EditorGUILayout.HelpBox("Or select a package below to update", MessageType.Info);
@@ -92,7 +90,7 @@ namespace GitPackageUpdater
                 if (GUILayout.Button(packages[i]))
                 {
                     ReinstallPackage(packages[i]);
-                    AssetDatabase.Refresh();
+                    RefreshUnity();
                 }
             }
 
@@ -111,6 +109,14 @@ namespace GitPackageUpdater
             );
             gitPackageReinstallerWindow.Show();
             gitPackageReinstallerWindow.RefreshPackages();
+        }
+
+        private static void RefreshUnity()
+        {
+            AssetDatabase.Refresh();
+#if UNITY_2020_1_OR_NEWER
+            Client.Resolve();
+#endif
         }
 
         public void RefreshPackages()
