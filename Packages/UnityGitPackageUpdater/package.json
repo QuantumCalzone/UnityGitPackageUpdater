@@ -2,7 +2,7 @@
     "name": "com.quantumcalzone.unitygitpackageupdater",
     "displayName": "UnityGitPackageUpdater",
     "description": "Easily update Unity packages hosted via git",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "unity": "2018.1",
     "license": "MIT",
     "repository": {
