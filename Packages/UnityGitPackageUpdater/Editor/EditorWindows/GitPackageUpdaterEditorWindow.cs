@@ -2,7 +2,7 @@
 using System.IO;
 using UnityEngine;
 using UnityEditor;
-using SimpleJSON;
+using GitPackageUpdater.SimpleJSON;
 
 namespace GitPackageUpdater
 {
