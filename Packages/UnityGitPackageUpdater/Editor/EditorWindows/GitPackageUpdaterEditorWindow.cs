@@ -1,8 +1,8 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEditor;
-using SimpleJSON;
+using GitPackageUpdater.SimpleJSON;
 
 namespace GitPackageUpdater
 {
@@ -62,13 +62,13 @@ namespace GitPackageUpdater
                 if (GUILayout.Button("Update All"))
                 {
                     ReinstallAllGitPackages();
-                    RefreshUnity();
+                    UnityRefresher.RefreshExceptPackages();
                 }
 
                 if (GUILayout.Button("Update All (Including Non-Git)"))
                 {
                     File.Delete(PackagesLockPath);
-                    RefreshUnity();
+                    UnityRefresher.RefreshExceptPackages();
                 }
 
                 EditorGUILayout.HelpBox("Or select a package below to update", MessageType.Info);
@@ -90,7 +90,7 @@ namespace GitPackageUpdater
                 if (GUILayout.Button(packages[i]))
                 {
                     ReinstallPackage(packages[i]);
-                    RefreshUnity();
+                    UnityRefresher.RefreshExceptPackages();
                 }
             }
 
@@ -109,14 +109,6 @@ namespace GitPackageUpdater
             );
             gitPackageReinstallerWindow.Show();
             gitPackageReinstallerWindow.RefreshPackages();
-        }
-
-        private static void RefreshUnity()
-        {
-            AssetDatabase.Refresh();
-#if UNITY_2020_1_OR_NEWER
-            Client.Resolve();
-#endif
         }
 
         public void RefreshPackages()
