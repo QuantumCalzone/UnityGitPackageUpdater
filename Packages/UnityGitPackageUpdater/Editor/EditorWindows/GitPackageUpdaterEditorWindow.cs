@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEditor;
@@ -116,8 +116,6 @@ namespace GitPackageUpdater
             AssetDatabase.Refresh();
 #if UNITY_2020_1_OR_NEWER
             Client.Resolve();
-#else
-            Debug.LogWarning("Press 'Ctrl/Cmd+R' to force Unity Package Manager to resolve packages.");
 #endif
         }
 
